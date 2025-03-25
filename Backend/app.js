@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://jordanmoret4:<Opcpass>@cluster1.g8gke.mongodb.net/',
+mongoose.connect('mongodb+srv://jordanProject:YpgZ8dgfL75jJd43@cluster1.g8gke.mongodb.net/',
     { useNewUrlParser: true,
       useUnifiedTopology: true })
     .then(() => console.log('Connexion à MongoDB réussie !'))
