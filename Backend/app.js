@@ -8,7 +8,17 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
+    res.status(201);
+    next();
+});
+
+app.use((req, res, next) => {
     res.json({ message: 'Requete a bien ete recu !' });
+    next();
+});
+
+app.use((req, res) => {
+    console.log('Reponse envoyee avec succes !');
 });
 
 module.exports = app;
