@@ -1,5 +1,9 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+
+const Book = require('./models/books');
+
 mongoose.connect('mongodb+srv://jordanProject:YpgZ8dgfL75jJd43@cluster1.g8gke.mongodb.net/',
     { useNewUrlParser: true,
       useUnifiedTopology: true })
@@ -18,10 +22,13 @@ app.use((req, res, next) => {
   });
 
 app.post('/api/stuff', (req, res, next) => {
-    console.log(req.body);
-    res.status(201).json({
-      message: 'Objet créé !'
+    delete req.body._id;
+    const book = new Book({
+      ...req.body,
     });
+    book.save()
+      .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
+      .catch(error => res.status(400).json({ error }));
   });
 
 
