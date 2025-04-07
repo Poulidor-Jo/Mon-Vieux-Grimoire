@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 const stuffRoutes = require('./routes/stuff');
 const userRoutes = require('./routes/user');
+const path = require('path');
 
 mongoose.connect('mongodb+srv://jordanProject:B6loFjQAUncP1DYL@cluster1.g8gke.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1',
     { useNewUrlParser: true,
