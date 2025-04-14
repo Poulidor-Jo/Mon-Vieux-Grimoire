@@ -14,7 +14,7 @@ mongoose.connect('mongodb+srv://jordanProject:B6loFjQAUncP1DYL@cluster1.g8gke.mo
 
 const app = express();
 
-app.use(express.json());//??????
+app.use(express.json());
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
