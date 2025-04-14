@@ -33,18 +33,25 @@ app.use((req, res, next) => {
 
 mongoose.connect('mongodb+srv://jordanProject:B6loFjQAUncP1DYL@cluster1.g8gke.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1',
     { useNewUrlParser: true,
-      useUnifiedTopology: true })
+      useUnifiedTopology: true 
+    })
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 
-
 app.use(express.json());
 
-
-
-app.use(bodyParser.json());
-
+//helmet and sanitize prevent database injections
+app.use(mongoSanitize({
+  replaceWith: '_',
+}));
+app.use(helmet({
+  xDownloadOptions: false,
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: false,
+}));
+// Apply the rate limiting middleware to all API calls
+app.use('/api/', limiter);
 
 // routes urls
 app.use('/api/stuff', stuffRoutes);
