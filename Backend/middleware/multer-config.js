@@ -1,55 +1,31 @@
 const multer = require('multer');
 const sharp = require('sharp');
-path = require('path');
-fs = require('fs');
 
+const storage = multer.memoryStorage();
+const upload = multer({ storage }).single('image');
 
-//sets the storage up
-const storage = multer.diskStorage({
-    destination: (req, file, callback) => {
-        callback(null, 'images');
-    },
-    filename: (req, file, callback) => {
-        const name = file.originalname.split(' ').join('_');
-        callback(null, name + Date.now() + '.webp');
+module.exports = (req, res, next) => {
+  upload(req, res, (err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erreur de téléchargement du fichier'});
     }
-});
 
-//ensure that files are always images
-const filter = (req, file, callback) => {
-    if (file.mimetype.split("/")[0] === 'image') {
-        callback(null, true);
-    } else {
-        callback(new Error("Only image files are supported"));
+    if (!req.file) {
+      return next();
     }
+
+    const { buffer, originalname } = req.file;
+    const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, '');
+    const ref = `${timestamp}-${originalname}.webp`;
+    const path = "./images/" + ref;
+
+    sharp(buffer)
+      .webp({ quality: 20 })
+      .toFile(path)
+      .then(() => {
+        req.file.filename = ref;
+        next();
+      })
+      .catch(() => res.status(500).json({ error: 'Erreur dans le processus de traitement de l\'image'}));
+  });
 };
-
-//upload module
-const upload = multer({ storage: storage, fileFilter: filter }).single('image');
-
-//optimize module
-const optimize = (req, res, next) => {
-    if (req.file) {
-        const filePath = req.file.path;
-        const output = path.join('images', `opt_${req.file.filename}`);
-        sharp(filePath)
-            .resize({ width: null, height: 568, fit: 'inside', background: { r: 255, g: 255, b: 255, alpha: 0 } })
-            .webp()
-            .toFile(output)
-            .then(() => {
-                //delete older file, keep the resized one
-                fs.unlink(filePath, () => {
-                    req.file.path = output;
-                    next();
-                })
-            })
-            .catch(err => next(err));
-    } else {
-        return next();
-    }
-};
-
-
-
-exports.upload = upload;
-exports.optimize = optimize;
