@@ -31,12 +31,13 @@ app.use((req, res, next) => {
   next();
 });
 
-mongoose.connect('mongodb+srv://jordanProject:B6loFjQAUncP1DYL@cluster1.g8gke.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1',
-    { useNewUrlParser: true,
-      useUnifiedTopology: true 
-    })
-    .then(() => console.log('Connexion à MongoDB réussie !'))
-    .catch(() => console.log('Connexion à MongoDB échouée !'));
+
+mongoose.connect(`mongodb+srv://jordanProject:${process.env.DB_PASSWORD}@cluster1.g8gke.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1`,
+  { useNewUrlParser: true,
+    useUnifiedTopology: true 
+  })
+  .then(() => console.log('Connexion à MongoDB réussie !'))
+  .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 
 app.use(express.json());
@@ -45,6 +46,7 @@ app.use(express.json());
 app.use(mongoSanitize({
   replaceWith: '_',
 }));
+
 app.use(helmet({
   xDownloadOptions: false,
   crossOriginEmbedderPolicy: false,
