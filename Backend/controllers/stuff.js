@@ -16,8 +16,6 @@ exports.createBook = (req, res, next) => {
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` // URL de l'image
     });
     // Sauvegarde du livre dans la base de données
-    console.log("bookObject", bookObject);
-
     book.save()
         .then(() => { res.status(201).json({ message: 'Objet enregistré !'}) })
         .catch(error => { res.status(400).json({ error }) });
