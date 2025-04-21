@@ -1,29 +1,34 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
     try {
-        if (!req.headers.authorization) {
-            console.warn('Authorization header is missing'); // Log missing header
-            req.auth = null; // Allow the request to proceed without authentication
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            console.warn('Authorization header is missing');
+            req.auth = null;
             return next();
         }
-        const token = req.headers.authorization.split(' ')[1];
+
+        const token = authHeader.split(' ')[1];
         if (!token) {
-            console.warn('Token is missing in Authorization header'); // Log missing token
-            req.auth = null; // Allow the request to proceed without authentication
+            console.warn('Token is missing in Authorization header');
+            req.auth = null;
             return next();
         }
-        console.log(`Token received: ${token}`); // Log the token received
-        const decodedToken = jwt.verify(token, process.env.SECRET_TOKEN);
-        console.log(`Decoded token: ${JSON.stringify(decodedToken)}`); // Log the decoded token
-        req.auth = {
-            userId: decodedToken.userId
-        };
+
+        try {
+            const decodedToken = await jwt.verify(token, process.env.SECRET_TOKEN);
+            req.auth = { userId: decodedToken.userId };
+        } catch (verificationError) {
+            console.error('Token verification failed:', verificationError);
+            req.auth = null;
+        }
+
         next();
     } catch (error) {
-        console.error('Authentication error:', error); // Log the error details
-        req.auth = null; // Allow the request to proceed without authentication
+        console.error('Unexpected error in authentication middleware:', error);
+        req.auth = null;
         next();
     }
 };

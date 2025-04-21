@@ -10,12 +10,11 @@ const bookSchema = mongoose.Schema({
   genre: { type: String, required: true },
   ratings: [{ userId: String, grade: Number }],
   averageRating: {
-      type: Number,
-      //getter to round the average rating (1 decimal)
-      get: function (v) {
-          return Math.round(v * 10) / 10;
-      },
-      required: true
+    type: Number,
+    get: function (v) {
+      return Math.round(v * 10) / 10;
+    },
+    required: true,
   },
 }, { toJSON: { getters: true } });
 
