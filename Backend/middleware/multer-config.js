@@ -20,6 +20,7 @@ module.exports = (req, res, next) => {
     const path = "./images/" + ref;
 
     sharp(buffer)
+      .rotate()
       .webp({ quality: 20 })
       .toFile(path)
       .then(() => {
