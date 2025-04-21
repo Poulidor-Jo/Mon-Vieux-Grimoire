@@ -54,34 +54,48 @@ exports.modifyBook = (req, res, next) => {
 
 // Suppression d'un livre
 exports.deleteBook = (req, res, next) => {
-    // Recherche du livre par son ID
+    if (!req.auth || !req.auth.userId) {
+        return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
+    }
+
     Book.findOne({ _id: req.params.id })
         .then((book) => {
-            // Vérification de l'utilisateur
-            if (book.userId != req.auth.userId) {
-                res.status(403).json({ message: '403: requête non autorisée' });
-            } else {
-                // Suppression du livre de la base de données
-                Book.deleteOne({ _id: req.params.id })
-                    .then(() => {
-                        res.status(200).json({ message: 'Supprimé !' });
-                        // Suppression de l'image associée
-                        const filename = book.imageUrl.split('/images/')[1];
-                        fs.unlink(`images/${filename}`, (err => {
-                            if (err) console.log(err);
-                        }));
-                    })
-                    .catch(error => res.status(401).json({ error }));
+            if (!book) {
+                return res.status(404).json({ message: 'Book not found' });
             }
+            if (book.userId !== req.auth.userId) {
+                return res.status(403).json({ message: 'Forbidden: You are not allowed to delete this book' });
+            }
+
+            Book.deleteOne({ _id: req.params.id })
+                .then(() => {
+                    const filename = book.imageUrl.split('/images/')[1];
+                    fs.unlink(`images/${filename}`, (err) => {
+                        if (err) console.error('Error deleting image:', err);
+                    });
+                    res.status(200).json({ message: 'Book deleted successfully' });
+                })
+                .catch((error) => res.status(500).json({ error }));
         })
-        .catch(error => res.status(500).json({ error }));
+        .catch((error) => res.status(500).json({ error }));
 };
 
 // Récupération d'un livre par son ID
 exports.getOneBook = (req, res, next) => {
+    console.log(`Fetching book with ID: ${req.params.id}`); // Log the ID being fetched
     Book.findOne({ _id: req.params.id })
-        .then((book) => res.status(200).json(book)) // Envoi du livre trouvé
-        .catch(error => res.status(404).json({ error })); // Erreur si non trouvé
+        .then((book) => {
+            if (!book) {
+                console.error(`Book with ID ${req.params.id} not found.`); // Log if book is not found
+                return res.status(404).json({ message: 'Book not found' });
+            }
+            console.log(`Book found: ${JSON.stringify(book)}`); // Log the book details
+            res.status(200).json(book);
+        })
+        .catch(error => {
+            console.error(`Error fetching book with ID ${req.params.id}:`, error); // Log any errors
+            res.status(500).json({ error });
+        });
 };
 
 // Récupération de tous les livres
