@@ -4,7 +4,7 @@ const path = require('path');
 require('dotenv').config();
 
 
-const stuffRoutes = require('./routes/stuff');
+const booksRoutes = require('./routes/books');
 const userRoutes = require('./routes/user');
 const rateLimit = require('express-rate-limit');
 
@@ -43,7 +43,7 @@ app.use(express.json());
 app.use('/api/', limiter);
 
 // routes urls
-app.use('/api/books', stuffRoutes);
+app.use('/api/books', booksRoutes);
 app.use('/api/auth', userRoutes);
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
