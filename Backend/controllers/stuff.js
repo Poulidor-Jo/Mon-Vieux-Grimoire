@@ -108,7 +108,7 @@ exports.getAllBooks = (req, res, next) => {
 exports.ratingBook = (req, res, next) => {
     const updatedRating = {
         userId: req.auth.userId, // ID de l'utilisateur
-        grade: req.auth.rating // Note donnée
+        grade: req.body.rating // Note donnée récupérée depuis le corps de la requête
     };
 
     // Vérification de la validité de la note
