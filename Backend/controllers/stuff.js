@@ -2,23 +2,22 @@
 const Book = require('../models/books');
 const fs = require('fs');
 
-
 // Création d'un nouveau livre
 exports.createBook = (req, res, next) => {
-    // Conversion de la chaîne JSON en objet
     const bookObject = JSON.parse(req.body.book);
-    // Création d'une instance de Book avec les données reçues
+    const initialRating = bookObject.ratings && bookObject.ratings[0] ? bookObject.ratings[0].grade : 0;
+
     const book = new Book({
         ...bookObject,
-        userId: req.auth.userId, // Ajout de l'ID utilisateur
-        ratings: [], // Initialisation des évaluations
-        averageRating: 0, // Note moyenne initialisée à 0
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` // URL de l'image
+        userId: req.auth.userId,
+        ratings: bookObject.ratings || [{ userId: req.auth.userId, grade: initialRating }],
+        averageRating: initialRating,
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
-    // Sauvegarde du livre dans la base de données
+
     book.save()
-        .then(() => { res.status(201).json({ message: 'Objet enregistré !'}) })
-        .catch(error => { res.status(400).json({ error }) });
+        .then(() => { res.status(201).json({ message: 'Objet enregistré !' }); })
+        .catch(error => { res.status(400).json({ error }); });
 };
 
 // Modification d'un livre existant
