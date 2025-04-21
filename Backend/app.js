@@ -3,21 +3,11 @@ const mongoose = require('mongoose');
 const path = require('path');
 require('dotenv').config();
 
-
 const booksRoutes = require('./routes/books');
 const userRoutes = require('./routes/user');
-const rateLimit = require('express-rate-limit');
-
+const rateLimiter = require('./middleware/rateLimiter');
 
 const app = express();
-
-//rate limit prevents brute force attacks on all app
-const limiter = rateLimit({
-  windowMs: 10 * 60 * 1000,
-  max: 100, 
-  standardHeaders: true, 
-  legacyHeaders: false, 
-})
 
 //CORS
 
@@ -36,11 +26,10 @@ mongoose.connect(`mongodb+srv://jordanProject:${process.env.DB_PASSWORD}@cluster
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-
 app.use(express.json());
 
 // Apply the rate limiting middleware to all API calls
-app.use('/api/', limiter);
+app.use('/api/', rateLimiter);
 
 // routes urls
 app.use('/api/books', booksRoutes);
