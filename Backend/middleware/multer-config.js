@@ -27,6 +27,9 @@ module.exports = (req, res, next) => {
         req.file.filename = ref;
         next();
       })
-      .catch(() => res.status(500).json({ error: 'Erreur dans le processus de traitement de l\'image'}));
+      .catch((err) => {
+        console.error('Error processing image with sharp:', err);
+        res.status(500).json({ error: 'Image processing error' });
+      });
   });
 };

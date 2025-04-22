@@ -53,10 +53,6 @@ exports.modifyBook = async (req, res, next) => {
 // Supprimer un livre
 exports.deleteBook = async (req, res, next) => {
     try {
-        if (!req.auth || !req.auth.userId) {
-            return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
-        }
-
         const book = await Book.findOne({ _id: req.params.id });
         if (!book) {
             return res.status(404).json({ message: 'Book not found' });
