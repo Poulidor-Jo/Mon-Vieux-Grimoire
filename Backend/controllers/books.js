@@ -16,7 +16,7 @@ exports.createBook = async (req, res, next) => {
         });
 
         await book.save();
-        res.status(201).json({ message: 'Objet enregistré !' });
+        res.status(201).json({ message: 'Object saved!' });
     } catch (error) {
         res.status(400).json({ error });
     }
@@ -32,7 +32,7 @@ exports.modifyBook = async (req, res, next) => {
 
         const book = await Book.findOne({ _id: req.params.id });
         if (book.userId != req.auth.userId) {
-            return res.status(401).json({ message: '401: requête non autorisée' });
+            return res.status(401).json({ message: '401: Unauthorized request' });
         }
 
         await Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id });
@@ -44,7 +44,7 @@ exports.modifyBook = async (req, res, next) => {
             });
         }
 
-        res.status(200).json({ message: 'Livre mis à jour avec succès' });
+        res.status(200).json({ message: 'Book successfully updated' });
     } catch (error) {
         res.status(400).json({ error });
     }
@@ -109,12 +109,12 @@ exports.ratingBook = async (req, res, next) => {
         };
 
         if (updatedRating.grade < 0 || updatedRating.grade > 5) {
-            return res.status(400).json({ message: 'La note doit être comprise entre 0 et 5' });
+            return res.status(400).json({ message: 'The rating must be between 0 and 5' });
         }
 
         const book = await Book.findOne({ _id: req.params.id });
         if (book.ratings.find(r => r.userId === req.auth.userId)) {
-            return res.status(400).json({ message: 'Vous avez déjà noté ce livre' });
+            return res.status(400).json({ message: 'You have already rated this book' });
         }
 
         book.ratings.push(updatedRating);

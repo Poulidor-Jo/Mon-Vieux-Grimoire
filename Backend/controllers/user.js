@@ -10,17 +10,17 @@ exports.signup = async (req, res, next) => {
 
         const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
         if (!emailRegex.test(email)) {
-            return res.status(400).json({ message: 'email non valide' });
+            return res.status(400).json({ message: 'Invalid email' });
         }
 
         if (password.length < 5) {
-            return res.status(400).json({ message: 'Le mot de passe doit avoir au minimum 5 caractères' });
+            return res.status(400).json({ message: 'Password must be at least 5 characters long' });
         }
 
         const hash = await bcrypt.hash(password, 10);
         const user = new User({ email, password: hash });
         await user.save();
-        res.status(201).json({ message: 'utilisateur créé' });
+        res.status(201).json({ message: 'User created' });
     } catch (error) {
         res.status(500).json({ error });
     }
@@ -32,12 +32,12 @@ exports.login = async (req, res, next) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(401).json({ message: 'Les informations de connection sont incorrectes.' });
+            return res.status(401).json({ message: 'Login information is incorrect.' });
         }
 
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) {
-            return res.status(401).json({ message: 'Les informations de connection sont incorrectes.' });
+            return res.status(401).json({ message: 'Login information is incorrect.' });
         }
 
         const token = jwt.sign(

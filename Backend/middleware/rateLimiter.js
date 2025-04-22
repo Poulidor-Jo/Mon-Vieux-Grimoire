@@ -1,4 +1,3 @@
-// Déplacement de la configuration de rate limit dans un middleware dédié
 const rateLimit = require('express-rate-limit');
 
 const limiter = rateLimit({
