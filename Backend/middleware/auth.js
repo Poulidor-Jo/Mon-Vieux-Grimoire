@@ -5,7 +5,6 @@ module.exports = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
-            console.warn('Authorization header is missing');
             req.auth = null;
             return next();
         }
