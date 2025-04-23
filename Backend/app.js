@@ -19,10 +19,7 @@ app.use((req, res, next) => {
   next();
 });
 
-mongoose.connect(`mongodb+srv://jordanProject:${process.env.DB_PASSWORD}@cluster1.g8gke.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1`,
-  { useNewUrlParser: true,
-    useUnifiedTopology: true 
-  })
+mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster1.g8gke.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1`)
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
